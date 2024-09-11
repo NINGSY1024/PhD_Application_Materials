@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -P Atlas9-Jobs
+#PBS -j oe
+#PBS -N graphene
+#PBS -q parallel12
+#PBS -l select=1:ncpus=12:mem=20gb:mpiprocs=12 -l place=pack
+#PBS -l walltime=24:00:00
+### This is to request 20 cores, 90gb mem and 24 hours for this parallel job.
+
+source /app1/ebenv
+module load Siesta/4.1.5-intel-2022a
+
+cd $PBS_O_WORKDIR;
+np=$(cat ${PBS_NODEFILE} | wc -l);
+
+# you can put more commands here
+mpirun -f ${PBS_NODEFILE} siesta <i.fdf> siesta.out
+
+##--- END HERE ---
