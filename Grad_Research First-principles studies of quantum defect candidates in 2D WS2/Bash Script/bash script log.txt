@@ -1,0 +1,37 @@
+ Now I need to write a .dat file based on calculated results. It contains 4 column:
+
+For each TM
+
+Column 1: TM and charge  state 
+
+Column 2 (raw Ef):  For every TM of every charge states (-1,0,+1), Extract Energy Difference (eV)  form ${TM}/Energy_Difference.txt
+
+Coulmn3(mu)  :  According to TM in column 1 , grep ${TM} mu/mu.txt | awk '{print $3}'
+
+Column4(corr):   According to charge state in column 1, grep energy {TM}/${Charge_Stete}corr/ALIGNED.txt| tail -1 | awk '{print $6}' (charge state 0 has no correction)
+
+Energy_Difference.txt:
+Charge State    Path                            Energy Difference (eV)
+0               Fe/0/no.1                       7.7563924608621164
+1-              Fe/1-/no.2                      7.4438989120026235
+1+              Fe/1+/no.2                      8.8322131993118091
+
+For each ${TM}
+	spin_state = grep "G.*T" ${TM}/Spin.txt | awk '{print $5}'| tr -d ':'
+        singlet  = grep "${TM}/${spin_state}S | awk '{printf "%.3f\n", $2}'
+	triplet  = grep "${TM}/${spin_state}T | awk '{printf "%.3f\n", $2}'
+	ΔE = singlet -triplet
+最终形成一个.dat文件：第一列是${TM}/${spin_state} 第二列是对应的ΔE
+
+
+cp /hpctmp/e1127489/template/INCAR2 INCAR
+
+grep -E '(NELECT|NUPDOWN)' ../0T/INCAR >> INCAR
+
+ln -s ../0T/CONTCAR POSCAR
+ln -s ../0T/POTCAR .
+cp /hpctmp/e1127489/template/job.vasp.pbs .
+cp /hpctmp/e1127489/template/KPOINTS2 KPOINTS
+ln -s ../0T/CHGCAR .
+
+sed -i "s/#PBS -N .*/#PBS -N Co_0Tband/" "job.vasp.pbs"

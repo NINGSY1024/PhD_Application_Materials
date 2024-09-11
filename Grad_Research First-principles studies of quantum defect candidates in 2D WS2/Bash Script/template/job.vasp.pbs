@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#PBS -P my_prog
+#PBS -j oe
+#PBS -N Zn_0S
+#PBS -l walltime=20:00:00
+#PBS -q parallel24
+#PBS -l select=1:ncpus=24:mpiprocs=24:mem=60GB
+
+cd $PBS_O_WORKDIR
+
+export MYVASP="/home/svu/e1127489/vasp-bin/"
+module load espresso6.5-Centos6_Intel
+/app1/centos6.3/Intel/xe_2018/impi/2018.0.128/intel64/bin/mpirun -np 24  $MYVASP/vasp_ncl > log.$PBS_JOBID
